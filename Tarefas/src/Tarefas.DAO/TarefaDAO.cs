@@ -17,33 +17,33 @@ namespace Tarefas.DAO
                 con.Open();
                 con.Execute(
                     @"INSERT INTO Tarefa
-                    (Titulo, Descricao, Concluida) VALUES
-                    (@Titulo, @Descricao, @Concluida);", tarefa
+                    (Titulo, Descricao, Concluida, UsuarioId) VALUES
+                    (@Titulo, @Descricao, @Concluida, @UsuarioId);", tarefa
                 );
             }
         }
 
-        public List<TarefaDTO> Consultar()
+        public List<TarefaDTO> Consultar(int usuarioId)
         {
             using (var con = Connection)
             {
                 con.Open();
                 var result = con.Query<TarefaDTO>(
-                    @"SELECT Id, Titulo, Descricao, Concluida FROM Tarefa"
+                    @"SELECT Id, Titulo, Descricao, Concluida, UsuarioId FROM Tarefa"
                 ).ToList();
                 return result;
             }
         }
 
-        public TarefaDTO Consultar(int id)
+        public TarefaDTO Consultar(int id, int usuarioId)
         {
             using (var con = Connection)
             {
                 con.Open();
                 TarefaDTO result = con.Query<TarefaDTO>
                 (
-                    @"SELECT Id, Titulo, Descricao, Concluida FROM Tarefa
-                    WHERE Id = @Id", new { id }
+                    @"SELECT Id, Titulo, Descricao, Concluida, UsuarioId FROM Tarefa
+                    WHERE UsuarioId = @UsuarioId", new { usuarioId }
                 ).First();
                 return result;
             }
@@ -56,20 +56,20 @@ namespace Tarefas.DAO
                 con.Open();
                 con.Execute(
                     @"UPDATE Tarefa 
-                    SET Titulo = @Titulo, Descricao = @Descricao, Concluida = @Concluida
-                    WHERE Id = @Id;", tarefa
+                    SET Titulo = @Titulo, Descricao = @Descricao, Concluida = @Concluida, UsuarioId = @UsuarioId
+                    WHERE UsuarioId = @UsuarioId", tarefa
                 );
             }
         }
 
-        public void Excluir(int id)
+        public void Excluir(int id, int usuarioId)
         {
             using (var con = Connection)
             {
                 con.Open();
                 con.Execute(
                     @"DELETE FROM Tarefa
-                    WHERE Id = @Id", new { id }
+                    WHERE UsuarioId = @UsuarioId", new { usuarioId }
                 );
             }
         }

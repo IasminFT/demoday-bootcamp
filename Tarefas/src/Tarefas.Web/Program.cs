@@ -28,6 +28,8 @@ builder.Services.AddTransient<IUsuarioDAO, UsuarioDAO>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(x => x.LoginPath = "/Login");
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

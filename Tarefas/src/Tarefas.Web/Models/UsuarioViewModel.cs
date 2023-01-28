@@ -18,5 +18,7 @@ namespace Tarefas.Web.Models
         [DataType(DataType.Password)]
         [DisplayName("Senha")]    
         public string Senha { get; set; }
+
+
     }
 }

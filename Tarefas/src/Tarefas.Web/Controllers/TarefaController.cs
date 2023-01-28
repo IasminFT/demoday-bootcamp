@@ -3,33 +3,38 @@ using Tarefas.Web.Models;
 using Tarefas.DTO;
 using Tarefas.DAO;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace Tarefas.Web.Controllers
 {
+    [Authorize]
     public class TarefaController : Controller
     {
         private readonly ITarefaDAO _tarefaDAO;
 
         private readonly IMapper _mapper;
 
-        public TarefaController(ITarefaDAO tarefaDAO, IMapper mapper)
+        public TarefaController(ITarefaDAO tarefaDAO, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _tarefaDAO = tarefaDAO;
             _mapper = mapper;
+            _usuarioId = int.Parse(httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.PrimarySid));
         }
         
         public IActionResult Details(int id)
         {            
-            var tarefaDTO = _tarefaDAO.Consultar(id);
+            var tarefaDTO = _tarefaDAO.Consultar(id, _usuarioId);
 
             var TarefaViewModel = _mapper.Map<TarefaViewModel>(tarefaDTO);
 
             return View(TarefaViewModel);
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int id)
         {   
-            var listaDeTarefasDTO = _tarefaDAO.Consultar();
+            var listaDeTarefasDTO = _tarefaDAO.Consultar(id);
 
             var listaDeTarefa = new List<TarefaViewModel>();
             
@@ -43,6 +48,7 @@ namespace Tarefas.Web.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.UsuarioId = _usuarioId;
             return View();
         }
 
@@ -78,7 +84,7 @@ namespace Tarefas.Web.Controllers
 
         public IActionResult Update(int id)
         {
-            var tarefaDTO = _tarefaDAO.Consultar(id);
+            var tarefaDTO = _tarefaDAO.Consultar(id, _usuarioId);
 
             var tarefaViewModel = _mapper.Map<TarefaViewModel>(tarefaDTO);
 
@@ -87,9 +93,12 @@ namespace Tarefas.Web.Controllers
 
         public IActionResult Delete(int id)
         {
-            _tarefaDAO.Excluir(id);
+            _tarefaDAO.Excluir(id, _usuarioId);
 
             return RedirectToAction("Index");
         }
+
+        private readonly int _usuarioId;
     }
+
 }
